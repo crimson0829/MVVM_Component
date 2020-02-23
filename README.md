@@ -1,4 +1,4 @@
-# MVVM_COMPONENT
+# MVVM_Component
 
 ## 介绍
 
@@ -64,7 +64,7 @@ class LoginInterceptor : IInterceptor {
 }
 
 //申明：
-@Route(path = ...,extras = RouterIntercepter.LOGIN_INTERCEPTOR)
+@Route(path = ...,extras = RouterInterceptor.LOGIN_INTERCEPTOR)
 
 ```
 
@@ -183,7 +183,7 @@ isModule=true
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-\
+
     </application>
 </manifest>
 
