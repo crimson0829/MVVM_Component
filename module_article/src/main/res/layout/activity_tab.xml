@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="MissingDefaultResource">
+
+    <data>
+
+
+        <variable
+            name="viewModel"
+            type="com.crimson.module.article.view.TabViewModel" />
+
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <include layout="@layout/base_title_bar" />
+
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:gravity="center"
+            android:text="jump login page"
+            android:textColor="@color/colorText"
+            android:background="#ccc"
+            android:layout_marginLeft="50dp"
+            android:layout_marginRight="50dp"
+            android:textSize="18sp"
+            app:bindClick="@{viewModel.onClickBtn}" />
+
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tab_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:tabMode="scrollable" />
+
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/view_pager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            app:vp2_bindPageScrolled="@{viewModel.vp2ScrolledConsumer}"
+            app:vp2_bindPageSelected="@{viewModel.vp2SelectedConsumer}"
+            app:vp2_multiPagePadding="@{40}"
+            app:vp2_transformerType="@{2}" />
+
+
+    </LinearLayout>
+
+
+</layout>

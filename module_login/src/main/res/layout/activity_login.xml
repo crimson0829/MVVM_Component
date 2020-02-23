@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="android.view.View" />
+
+
+        <variable
+            name="viewModel"
+            type="com.crimson.module.login.view.LoginViewModel" />
+
+    </data>
+
+    <LinearLayout
+        android:id="@+id/ll_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+
+        <include layout="@layout/base_title_bar" />
+
+
+        <androidx.appcompat.widget.AppCompatEditText
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:gravity="center_vertical"
+            android:layout_marginTop="100dp"
+            android:hint="请输入登录名"
+            android:inputType="text"
+            android:maxLines="11"
+            android:text="@{viewModel.userName}"
+            android:textColor="@color/colorText"
+            android:textSize="16sp"
+            app:textChanges="@{viewModel.userNameChanged}" />
+
+        <androidx.appcompat.widget.AppCompatEditText
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:layout_marginTop="15dp"
+            android:gravity="center_vertical"
+            android:hint="请输入密码"
+            android:inputType="text"
+            android:maxLines="11"
+            android:text="@{viewModel.userPassword}"
+            android:textColor="@color/colorText"
+            android:textSize="16sp"
+            app:textChanges="@{viewModel.userPasswordChanged}" />
+
+
+            <androidx.appcompat.widget.AppCompatButton
+                app:bindClick="@{viewModel.onClickBtn}"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:gravity="center"
+                android:text="登录"
+                android:layout_marginTop="30dp"
+                android:textColor="@color/colorText"
+                android:layout_marginLeft="45dp"
+                android:layout_marginRight="45dp"
+                android:background="#ccc"
+                android:textSize="18sp" />
+
+    </LinearLayout>
+</layout>

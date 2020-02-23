@@ -1,0 +1,92 @@
+apply plugin: 'com.android.application'
+
+apply plugin: 'kotlin-android'
+
+apply plugin: 'kotlin-android-extensions'
+
+apply plugin: 'kotlin-kapt'
+
+def config = rootProject.ext.android
+
+android {
+    compileSdkVersion config.compileSdkVersion
+    buildToolsVersion config.buildToolsVersion
+    defaultConfig {
+        applicationId config.applicationId
+        minSdkVersion config.minSdkVersion
+        targetSdkVersion config.targetSdkVersion
+        versionCode config.versionCode
+        versionName config.versionName
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        multiDexEnabled true
+        resValue "string", "app_name", "mvvm_component"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    dataBinding {
+        enabled true
+    }
+
+    //如果是构建debug包, 则禁用 "png cruncher" (默认cruncherEnabled=true, 禁用以加速构建)
+    def enableCruncher = { ->
+        return !isDebug()
+    }
+
+    dexOptions {
+        //优化dex配置
+        dexInProcess true
+        preDexLibraries true
+        maxProcessCount 8
+        javaMaxHeapSize "4g"
+    }
+
+    aaptOptions {
+        //禁用cruncher, 以加速编译
+        cruncherEnabled = enableCruncher()
+        cruncherProcesses = 0
+    }
+
+    lintOptions {
+        checkReleaseBuilds false
+        quiet true
+        abortOnError false
+        ignoreWarnings true
+        disable "InvalidPackage", "ResourceType", "TypographyFractions", "TypographyQuotes"
+        enable "RtlHardcoded", "RtlCompat", "RtlEnabled"
+        check "NewApi", "InlinedApi"
+    }
+
+    //跳过Lint和Test相关的task, 以加速编译
+    if (isDebug()) {
+        gradle.taskGraph.whenReady {
+            tasks.each { task ->
+                if (task.name.contains("Test") || task.name.contains("Lint")) {
+                    task.enabled = false
+                }
+            }
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    if (!isModule.toBoolean()) {
+        implementation project(':module_login')
+        implementation project(':module_article')
+    }else{
+        implementation project(':library_router')
+    }
+
+
+}
