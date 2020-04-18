@@ -1,4 +1,4 @@
-# MVVM_COMPONENT
+# MVVM_Component
 
 ## 介绍
 
@@ -38,7 +38,7 @@ private const val LOGIN_MODULE = "com.crimson.module.login.LoginModule"
 
 ```
 
-1.2 组件的拦截：该方式通过AOP的形式实现，可实现IInterceptor接口并在@Router注解中申明就可起到拦截器的效果
+1.2 组件的拦截：可实现IInterceptor接口并在@Router注解中申明就可起到拦截器的效果
 
 ```
 //实现：
@@ -64,7 +64,7 @@ class LoginInterceptor : IInterceptor {
 }
 
 //申明：
-@Route(path = ...,extras = RouterIntercepter.LOGIN_INTERCEPTOR)
+@Route(path = ...,extras = RouterInterceptor.LOGIN_INTERCEPTOR)
 
 ```
 
@@ -183,7 +183,7 @@ isModule=true
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-\
+
     </application>
 </manifest>
 
