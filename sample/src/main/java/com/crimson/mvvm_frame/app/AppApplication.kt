@@ -1,12 +1,14 @@
 package com.crimson.mvvm_frame.app
 
+import android.graphics.Color
+import android.view.Gravity
 import com.crimson.mvvm.base.BaseApplication
 import com.crimson.mvvm.base.CommonViewLoading
-import com.crimson.mvvm.config.AppConfigOptions
-import com.crimson.mvvm.config.RetrofitConfig
-import com.crimson.mvvm.config.SmartRefreshHeaderConfig
+import com.crimson.mvvm.config.*
 import com.crimson.mvvm.net.NetworkClient.Companion.BASE_URL
 import com.crimson.mvvm_frame.R
+import com.crimson.widget.loading.LoadingLayoutProgressViewAttrs
+import com.crimson.widget.loading.LoadingLayoutTextViewAttrs
 
 /**
  * @author crimson
@@ -35,7 +37,25 @@ class AppApplication : BaseApplication() {
 //            .buildTitleBar(TitleBarConfig(R.color.colorPrimary,R.drawable.app_back_icon,
 //                Color.parseColor("#ffffff"),16f,true))
             .buildLoadingViewImplClass(CommonViewLoading::class.java)
-            .buildRetrofit(RetrofitConfig(BASE_URL, 20))
+            .buildRetrofit(RetrofitConfig("https://www.wanandroid.com/", 20))
+            .buildToast(ToastConfig(Color.WHITE, 18f, Color.BLACK))
+            .buildLoadingLayout(
+                LoadingLayoutConfig(
+                    LoadingLayoutProgressViewAttrs(
+                        50,
+                        50,
+                        Gravity.CENTER,
+                        R.color.colorPrimary
+                    ),
+                    LoadingLayoutTextViewAttrs(
+                        R.string.brvah_loading,
+                        R.color.colorPrimaryDark,
+                        12f,
+                        Gravity.CENTER,
+                        40
+                    )
+                )
+            )
             .initDefaultSmartRefresh(SmartRefreshHeaderConfig(R.drawable.refresh_head_arrow))
             .initScreenAutoSize()
 

@@ -11,8 +11,8 @@ import com.crimson.mvvm.base.BaseViewModel
 import com.crimson.mvvm.binding.consumer.bindConsumer
 import com.crimson.mvvm.binding.consumer.bindTiConsumer
 import com.crimson.mvvm.coroutines.callRemoteLiveDataAsync
+import com.crimson.mvvm.coroutines.ioCoroutineGlobal
 import com.crimson.mvvm.ext.logw
-import com.crimson.mvvm.ext.runOnIO
 import com.crimson.mvvm.ext.view.toast
 import com.crimson.mvvm.livedata.SingleLiveData
 import com.crimson.mvvm.net.errorResponseCode
@@ -102,7 +102,7 @@ class TabViewModel : BaseViewModel() {
                 },{
                     //result success
                     onLoadingViewResult()
-                    runOnIO {
+                    ioCoroutineGlobal {
                         handleData(this)
                     }
                 })

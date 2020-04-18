@@ -26,7 +26,7 @@ class NetworkClient private constructor(private val context: Context) {
     companion object {
 
         //Base Url
-        var BASE_URL = "https://www.wanandroid.com/"
+        var BASE_URL = "https://github.com/"
 
         //链接时间
         private var CONNECT_TIMEOUT = 30L

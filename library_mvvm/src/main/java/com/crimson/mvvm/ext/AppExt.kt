@@ -6,6 +6,7 @@ import android.app.Application
 import android.os.Handler
 import android.os.Looper
 import com.crimson.mvvm.base.BaseApplication
+import com.crimson.mvvm.config.ViewLifeCycleManager
 import com.crimson.mvvm.utils.ConvertUtils
 import com.crimson.mvvm.utils.GsonUtils
 import com.crimson.mvvm.utils.NetWorkUtils
@@ -14,6 +15,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
+import kotlin.system.exitProcess
 
 
 /**
@@ -36,14 +38,6 @@ inline fun <T, R> T.tryCatch(block: T.() -> R?): R? {
     }
 }
 
-/**
- * coroutine run on IO
- */
-fun <T> T.runOnIO(block: T.() -> Unit): Job {
-    return GlobalScope.launch(Dispatchers.IO) {
-        block()
-    }
-}
 
 val <T> T.exhaustive: T
     get() = this
@@ -124,9 +118,19 @@ inline val currentTimeMillis: Long get() = System.currentTimeMillis()
 
 
 /**
- * json转换对象
+ * json 转换对象
  */
 fun <T> String.json(clazz: Class<T>): T = GsonUtils.fromJson(this, clazz)
+
+/**
+ * 退出app
+ */
+fun exitApp() {
+
+    ViewLifeCycleManager.closeAllActivity()
+    exitProcess(0)
+}
+
 
 
 

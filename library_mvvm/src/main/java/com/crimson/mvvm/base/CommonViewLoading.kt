@@ -4,6 +4,7 @@ import android.content.Context
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.contains
+import com.crimson.mvvm.config.AppConfigOptions
 import com.crimson.mvvm.rx.bus.RxBus
 import com.crimson.mvvm.rx.bus.RxCode
 import com.crimson.widget.loading.EmptyLayout
@@ -15,11 +16,15 @@ import com.crimson.widget.loading.LoadingLayout
  * @author crimson
  * @date   2019-12-29
  * 默认 view loading impl
+ *
  */
 class CommonViewLoading(context: Context) : IViewDataLoading {
 
     private val loadingView by lazy {
         LoadingLayout(context)
+            .setProgressViewAttrs(AppConfigOptions.LOADING_LAYOUT_CONFIG.progressConfig)
+            .setTextViewAttrs(AppConfigOptions.LOADING_LAYOUT_CONFIG.textViewConfig)
+
     }
 
     private val loadingDialog by lazy {
@@ -41,19 +46,24 @@ class CommonViewLoading(context: Context) : IViewDataLoading {
             if (view.contains(loadingError)) {
                 view.removeView(loadingError)
             }
-            if (view.contains(emptyView)){
+            if (view.contains(emptyView)) {
                 view.removeView(emptyView)
+            }
+            if (view.contains(loadingView)) {
+                view.removeView(loadingView)
             }
             view.addView(loadingView)
         }
 
     }
 
-    override fun onLoadingViewResult(view: View?,needEmptyView: Boolean) {
+    override fun onLoadingViewResult(view: View?, needEmptyView: Boolean) {
         if (view is ViewGroup) {
-            view.removeView(loadingView)
+            if (view.contains(loadingView)) {
+                view.removeView(loadingView)
+            }
 
-            if (needEmptyView){
+            if (needEmptyView && !view.contains(emptyView)) {
                 view.addView(emptyView)
             }
         }
@@ -81,6 +91,9 @@ class CommonViewLoading(context: Context) : IViewDataLoading {
                 view.removeView(loadingView)
             }
             //添加error view
+            if (view.contains(loadingError)) {
+                view.removeView(loadingError)
+            }
             view.addView(loadingError)
             loadingError.setOnClickListener {
                 //post rxBus，在对应的ViewModel中注册处理
@@ -90,7 +103,6 @@ class CommonViewLoading(context: Context) : IViewDataLoading {
         }
 
     }
-
 
 
 }

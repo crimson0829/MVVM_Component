@@ -13,6 +13,8 @@ import com.crimson.mvvm.ext.logd
 import com.crimson.mvvm.net.NetworkClient
 import com.crimson.mvvm.utils.FileUtils
 import com.crimson.mvvm.utils.constant.MemoryConstants
+import com.crimson.widget.loading.LoadingLayoutProgressViewAttrs
+import com.crimson.widget.loading.LoadingLayoutTextViewAttrs
 import com.scwang.smartrefresh.layout.SmartRefreshLayout
 import com.scwang.smartrefresh.layout.footer.ClassicsFooter
 import com.scwang.smartrefresh.layout.header.ClassicsHeader
@@ -50,6 +52,16 @@ class AppConfigOptions(val context: Context) {
         var LOADING_VIEW_CLAZZ: Class<out IViewDataLoading>? = null
 
         /**
+         * app toast 参数设置
+         */
+        var TOAST_CONFIG = ToastConfig()
+
+        /**
+         * loadingLayout 参数设置
+         */
+        var LOADING_LAYOUT_CONFIG = LoadingLayoutConfig()
+
+        /**
          * 默认图片缓存路径
          */
         var APP_IMAGE_CACHE_PATH = appContext()?.let {
@@ -72,6 +84,7 @@ class AppConfigOptions(val context: Context) {
         }.also {
             FileUtils.createOrExistsDir(it)
         }
+
         /**
          * 默认文件缓存大小
          */
@@ -136,6 +149,23 @@ class AppConfigOptions(val context: Context) {
                 config.showRequest,
                 config.headers
             )
+        return this
+    }
+
+    /**
+     * toas参数设置
+     */
+    fun buildToast(config: ToastConfig = ToastConfig()): AppConfigOptions {
+        TOAST_CONFIG = config
+        return this
+
+    }
+
+    /**
+     * loadingLayout参数设置,只有在这只默认CommonViewLoading实现时才有效果
+     */
+    fun buildLoadingLayout(config: LoadingLayoutConfig = LoadingLayoutConfig()): AppConfigOptions {
+        LOADING_LAYOUT_CONFIG = config
         return this
     }
 
@@ -301,6 +331,26 @@ data class RetrofitConfig(
     var showResponse: Boolean = true,
     var showRequest: Boolean = true,
     var headers: HashMap<String, String> = hashMapOf()
+)
+
+/**
+ * app toast config
+ */
+data class ToastConfig(
+    //字体颜色
+    var textColor: Int = Color.BLACK,
+    //字体大小
+    var textSize: Float = 15f,
+    //背景色
+    var bgColor: Int = Color.WHITE
+)
+
+/**
+ * LoadingLayoutConfig
+ */
+data class LoadingLayoutConfig(
+    var progressConfig: LoadingLayoutProgressViewAttrs = LoadingLayoutProgressViewAttrs(),
+    var textViewConfig: LoadingLayoutTextViewAttrs = LoadingLayoutTextViewAttrs()
 )
 
 /**

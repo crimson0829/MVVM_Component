@@ -2,12 +2,18 @@ package com.crimson.mvvm.binding
 
 import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
+import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Typeface
 import android.os.Build
 import android.text.*
+import android.text.InputFilter.LengthFilter
+import android.text.method.LinkMovementMethod
+import android.text.style.ClickableSpan
 import android.text.style.ForegroundColorSpan
+import android.text.style.ImageSpan
 import android.view.View
+import android.widget.EditText
 import android.widget.TextView
 import androidx.annotation.*
 import androidx.appcompat.widget.AppCompatTextView
@@ -15,49 +21,61 @@ import androidx.core.content.ContextCompat
 import androidx.core.text.PrecomputedTextCompat
 import androidx.core.widget.TextViewCompat
 import androidx.databinding.BindingAdapter
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
 import androidx.vectordrawable.graphics.drawable.ArgbEvaluator
 import com.crimson.mvvm.binding.consumer.BindConsumer
+import com.crimson.mvvm.ext.Api
+import com.crimson.mvvm.ext.afterApi
 import com.crimson.mvvm.ext.tryCatch
 import com.crimson.mvvm.rx.observeOnMainThread
 import com.google.android.material.textfield.TextInputLayout
 import com.jakewharton.rxbinding3.widget.textChanges
+import com.trello.rxlifecycle3.android.lifecycle.kotlin.bindUntilEvent
+import org.w3c.dom.Text
+import java.util.regex.Pattern
 
 
 /**
  * bind text changes
  * textChanges：绑定文字改变监听
  */
-@BindingAdapter("app:textChanges")
-fun TextView.textChanges(changesConsumer: BindConsumer<String>?) {
-    changesConsumer?.apply {
+@BindingAdapter("app:textChanges", "app:textChangesError",requireAll = false)
+fun TextView.textChanges(
+    changesConsumer: BindConsumer<String>?,
+    changesErrorConsumer: BindConsumer<Throwable>?=null
+) {
+
+    (context as? LifecycleOwner)?.let { owner ->
         textChanges()
             .observeOnMainThread()
-            .subscribe {
-                accept(it.toString())
-            }
+            .bindUntilEvent(owner, Lifecycle.Event.ON_DESTROY)
+            .subscribe({
+                changesConsumer?.accept(it.toString())
+            }, {
+                changesErrorConsumer?.accept(it)
+            })
     }
 
 }
 
 /**
- * 键盘搜索监听
+ * bind keyboard search click call back
+ * 用户edittext输入确认
  */
 @BindingAdapter("app:keyboardSearch")
 fun TextView.keyboardSearch(consumer: BindConsumer<Any>?) {
-    consumer?.apply {
-        setOnEditorActionListener { _, actionId, event ->
-            if ((actionId == 0 || actionId == 3) && event != null) {
-                //点击搜索要做的操作
-                consumer.accept(event)
 
-            }
-            return@setOnEditorActionListener false
+    setOnEditorActionListener { _, actionId, event ->
+        if ((actionId == 0 || actionId == 3) && event != null) {
+            //点击搜索要做的操作
+            consumer?.accept(event)
+
         }
-
+        return@setOnEditorActionListener false
     }
 
 }
-
 
 /**
  * 设置图案方位，默认左边
@@ -77,6 +95,7 @@ fun TextView.drawable(@DrawableRes drawableRes: Int, direction: Direction = Dire
 /**
  * 设置颜色
  */
+@BindingAdapter("app:bindTextColor")
 fun TextView.textColor(@ColorRes colorRes: Int) =
     setTextColor(ContextCompat.getColor(context, colorRes))
 
@@ -121,6 +140,22 @@ fun TextView.cancelLine() {
     paint.flags = 0
 }
 
+/**
+ * 设置跑马灯
+ */
+@BindingAdapter("app:textMarqueeEnable")
+fun TextView.setMarqueeEnable(enable: Boolean) {
+    ellipsize = if (enable) {
+        TextUtils.TruncateAt.MARQUEE
+    } else {
+        TextUtils.TruncateAt.END
+    }
+    setSingleLine()
+    isSelected = enable
+    onWindowFocusChanged(enable)
+}
+
+
 
 /**
  * Removes the bolding of a text view
@@ -158,9 +193,12 @@ fun TextView.font(font: String) {
 /**
  * Set different color for substring TextView.
  */
-fun TextView.setColorOfSubstring(substring: String, color: Int) {
+fun TextView.setColorOfSubstring(
+    substring: String,
+    color: Int
+) {
     tryCatch {
-        val spannable = android.text.SpannableString(text)
+        val spannable = SpannableString(text)
         val start = text.indexOf(substring)
         spannable.setSpan(
             ForegroundColorSpan(ContextCompat.getColor(context, color)),
@@ -168,14 +206,83 @@ fun TextView.setColorOfSubstring(substring: String, color: Int) {
             start + substring.length,
             Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
         )
+
         text = spannable
     }
 
 }
 
+fun TextView.setClickableOfSubstring(
+    substring: String,
+    color: Int,
+    clickConsumer: BindConsumer<View>?,
+    underlined: Boolean = false
+) {
+    tryCatch {
+        val spannable = SpannableString(text)
+        val start = text.indexOf(substring)
+        clickConsumer?.apply {
+            spannable.setSpan(
+                object : ClickableSpan() {
+                    override fun onClick(widget: View) {
+                        clickConsumer.accept(widget)
+                    }
+
+                    override fun updateDrawState(ds: TextPaint) {
+//                        super.updateDrawState(ds)
+                        setTextColor(ContextCompat.getColor(context, color))
+                        underLine(underlined)
+
+                    }
+                }
+                ,
+                start,
+                start + substring.length,
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+        }
+
+        movementMethod = LinkMovementMethod.getInstance();
+        text = spannable
+        highlightColor = Color.parseColor("#00000000")
+    }
+}
+
+@BindingAdapter("app:textSubstring", "app:textDrawableRes", requireAll = true)
+fun TextView.setImageOfSubstring(substring: String, drawableRes: Int) {
+
+    tryCatch {
+        val spannable = SpannableString(text)
+        val start = text.indexOf(substring)
+        if (start == -1) {
+            return
+        }
+
+        val drawable = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            context.resources.getDrawable(drawableRes, null)
+        } else context.resources.getDrawable(drawableRes)
+
+        val ratio = drawable.intrinsicWidth * 1.0f / drawable.intrinsicHeight
+
+        drawable.setBounds(0, 0, (textSize * ratio).toInt(), textSize.toInt())
+
+        spannable.setSpan(
+            ImageSpan(drawable, ImageSpan.ALIGN_BASELINE),
+            start,
+            start + substring.length,
+            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+        )
+
+        text = spannable
+    }
+
+}
+
+
 /**
  * Set TextView from Html
  */
+@BindingAdapter("app:textHtml")
 fun TextView.setTextFromHtml(html: String) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
         this.text = Html.fromHtml(html, Html.FROM_HTML_MODE_LEGACY)
@@ -184,6 +291,7 @@ fun TextView.setTextFromHtml(html: String) {
         this.text = Html.fromHtml(html)
     }
 }
+
 
 /**
  * Sets given content to TextView or hides it.
@@ -219,7 +327,7 @@ fun TextView.textColorAnim(from: Int, to: Int) {
 }
 
 
-fun TextView.preComputeCurrentText(){
+fun TextView.preComputeCurrentText() {
     val textParams = TextViewCompat.getTextMetricsParams(this)
     val text = PrecomputedTextCompat.create(text, textParams)
     this.text = text
@@ -341,7 +449,11 @@ fun TextView.addDebounceTextListener(
     })
 }
 
-fun TextView.addDebounceChangeStateListener(delayInMillis: Long = 500, timeoutInMillis: Long = 0, listener: (Boolean) -> Unit) {
+fun TextView.addDebounceChangeStateListener(
+    delayInMillis: Long = 500,
+    timeoutInMillis: Long = 0,
+    listener: (Boolean) -> Unit
+) {
     addTextChangedListener(object : TextWatcher {
         private var start: Boolean = false
         private val runnable: Runnable = Runnable {
@@ -385,8 +497,7 @@ fun TextView.addDebounceChangeStateListener(delayInMillis: Long = 500, timeoutIn
 }
 
 
-
-fun AppCompatTextView.setPrecomputedText(text:String?){
+fun AppCompatTextView.setPrecomputedText(text: String?) {
     text?.let {
         setTextFuture(PrecomputedTextCompat.getTextFuture(it, this.textMetricsParamsCompat, null))
     }
@@ -431,3 +542,40 @@ fun AppCompatTextView.setTextOrHide(text: String?) {
         this.visibility = View.GONE
     }
 }
+
+
+fun TextView.measureText(): Int = paint.measureText(text.toString()).toInt()
+
+
+/**
+ * 禁止输入特殊字符
+ */
+fun EditText.forbidSpecialCharacter(maxLength: Int = Int.MAX_VALUE) {
+    filters = arrayOf(getEditTextInhibitInputSpeChat(), LengthFilter(maxLength))
+}
+
+/**
+ *
+ * 特殊字符过滤
+ *
+ * @param
+ */
+private fun getEditTextInhibitInputSpeChat(): InputFilter? {
+    return InputFilter { source, start, end, dest, dstart, dend ->
+        //                String speChat = "[A-Za-z0-9_\\-\\u4e00-\\u9fa5]+";
+//                Pattern pattern = Pattern.compile(speChat);
+//                Matcher matcher = pattern.matcher(source.toString());
+//                if (matcher.find()) return "";
+//                return null;
+        val emoji = Pattern.compile(
+            "[\ud83c\udc00-\ud83c\udfff]|[\ud83d\udc00-\ud83d\udfff]|[\u2600-\u27ff]",
+            Pattern.UNICODE_CASE or Pattern.CASE_INSENSITIVE
+        )
+        val emojiMatcher = emoji.matcher(source)
+        if (emojiMatcher.find()) {
+            ""
+        } else null
+    }
+}
+
+

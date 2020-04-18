@@ -23,7 +23,7 @@ import kotlinx.android.synthetic.main.activity_picture.*
 @Route(path = RouterActivityPath.Article.PAGER_LOGIN_TEST,extras = RouterInterceptor.LOGIN_INTERCEPTOR)
 class TestLoginInterceptorActivity : BaseActivity<ActivityPictureBinding, BaseViewModel>() {
 
-    val url = "https://uploadbeta.com/api/pictures/random/?key=%E6%8E%A8%E5%A5%B3%E9%83%8E"
+    val url = "https://img.xjh.me/random_img.php?type=bg&ctype=nature&return=302&device=mobile"
 
     override fun initContentView(savedInstanceState: Bundle?): Int =
         R.layout.activity_picture

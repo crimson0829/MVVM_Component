@@ -1,22 +1,28 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
-
-def config = rootProject.ext.android
-
 android {
-    compileSdkVersion config.compileSdkVersion
-    buildToolsVersion config.buildToolsVersion
+    compileSdkVersion 29
+    buildToolsVersion "29.0.2"
 
 
     defaultConfig {
-        minSdkVersion config.minSdkVersion
-        targetSdkVersion config.targetSdkVersion
-        versionCode config.versionCode
-        versionName config.versionName
+        minSdkVersion 21
+        targetSdkVersion 29
+        versionCode 1
+        versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles 'consumer-rules.pro'
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_1_8.toString()
     }
 
     buildTypes {
@@ -33,6 +39,16 @@ dependencies {
     api rootProject.ext.dependencies["kotlin-jdk8"]
     api rootProject.ext.dependencies["androidx-appcompat"]
     api rootProject.ext.dependencies["androidx-core"]
+
+    //view
+    api rootProject.ext.dependencies["brvah"]
+    api rootProject.ext.dependencies["SmartRefresh"]
+    api rootProject.ext.dependencies["autosize"]
+    api rootProject.ext.dependencies["dialogs-core"]
+    api rootProject.ext.dependencies["dialogs-bottomsheets"]
+    api rootProject.ext.dependencies["dialogs-lifecycle"]
+    api project(":library_tab")
+
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'

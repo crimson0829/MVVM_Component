@@ -19,22 +19,20 @@ object ModuleConfig {
     //router组件
     private const val ROUTER_MODULE = "com.crimson.library.router.module.RouterModule"
 
-    //登录组件
+    //login
     private const val LOGIN_MODULE = "com.crimson.module.login.LoginModule"
 
-    //文章组件
+    //article
     private const val ARTICLE_MODULE = "com.crimson.module.article.ArticleModule"
-
-
-    //app组件
-    private const val APP_MODULE = "com.crimson.mvvm_frame.app.AppModule"
 
 
     //组件集合
     private var modules =
         arrayListOf(
-            BASE_MODULE, ROUTER_MODULE, LOGIN_MODULE, ARTICLE_MODULE,
-            APP_MODULE
+            BASE_MODULE,
+            ROUTER_MODULE,
+            LOGIN_MODULE,
+            ARTICLE_MODULE
         )
 
     /**
