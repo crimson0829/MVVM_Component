@@ -1,9 +1,11 @@
 package com.crimson.module.article.view
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import com.crimson.library.router.api.RouterActivityPath
+import com.crimson.library.router.api.put
 import com.crimson.library.router.api.routerPath
 import com.crimson.module.article.model.AuthorModel
 import com.crimson.module.article.model.kdo.TabListEntity
@@ -19,6 +21,7 @@ import com.crimson.mvvm.net.errorResponseCode
 import com.crimson.mvvm.net.handle
 import com.crimson.mvvm.rx.bus.RxCode
 import com.crimson.mvvm.rx.bus.RxDisposable
+import com.trello.rxlifecycle3.android.lifecycle.kotlin.bindToLifecycle
 import io.reactivex.disposables.Disposable
 import org.koin.core.inject
 
@@ -31,14 +34,13 @@ import org.koin.core.inject
  */
 class TabViewModel : BaseViewModel() {
 
-
     //koin inject
     val model by inject<AuthorModel>()
 
      val onClickBtn = bindConsumer<Unit> {
 
          routerPath(RouterActivityPath.Login.PAGER_LOGIN)
-             .withString("login","from tab")
+             .put("login","from tab")
              .navigation()
 
       }
@@ -48,7 +50,12 @@ class TabViewModel : BaseViewModel() {
 
     val fragments = arrayListOf<Fragment>()
 
-    var errorDis: Disposable? = null
+
+    val tabSelectChanged = bindConsumer<Int> {
+        logw("tabSelectChanged -> $this")
+
+    }
+
 
     val vp2SelectedConsumer =
         bindConsumer<Int> {
@@ -68,9 +75,6 @@ class TabViewModel : BaseViewModel() {
      */
     fun getData() {
 
-//        viewModelScope.launch {
-//
-//        }
 
 
         callRemoteLiveDataAsync {
@@ -129,23 +133,21 @@ class TabViewModel : BaseViewModel() {
         tabDataCompleteLD.postValue(titles)
     }
 
+    @SuppressLint("CheckResult")
     override fun registerRxBus() {
 
-        errorDis = rxbus.toObservable(RxCode.POST_CODE, Integer::class.java)
+      rxbus.toObservable(RxCode.POST_CODE, Integer::class.java)
+            .bindToLifecycle(lifecycleOwner)
             .subscribe {
                 if (it.toInt() == RxCode.ERROR_LAYOUT_CLICK_CODE) {
                     getData()
                 }
             }
 
-        RxDisposable.add(errorDis)
 
 
     }
 
-    override fun removeRxBus() {
-        RxDisposable.remove(errorDis)
 
-    }
 
 }

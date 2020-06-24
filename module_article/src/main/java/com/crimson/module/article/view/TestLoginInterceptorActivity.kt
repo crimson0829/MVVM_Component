@@ -53,8 +53,7 @@ class TestLoginInterceptorActivity : BaseActivity<ActivityPictureBinding, BaseVi
     private fun bindImage(style: Int = 2) {
         vb?.ivPicture?.bindImage(
             url,
-            style, 5, true, 4, R.drawable.icon_picture
-        )
+            style, 5, true, 4)
     }
 
 }

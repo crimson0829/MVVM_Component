@@ -15,8 +15,9 @@ class ArticleAdapter : BaseBindingAdapter<ArticleEntity, AdapterItemArticleBindi
     (R.layout.adapter_item_article) {
 
     override fun convert(helper: BaseViewHolder, item: ArticleEntity?) {
-        helper.getBinding<AdapterItemArticleBinding>()?.model = item
-        super.convert(helper, item)
+
+        getDataBinding(helper)?.model=item
+
 
     }
 

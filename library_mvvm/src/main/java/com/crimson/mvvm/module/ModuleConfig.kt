@@ -19,10 +19,10 @@ object ModuleConfig {
     //router组件
     private const val ROUTER_MODULE = "com.crimson.library.router.module.RouterModule"
 
-    //login
+    //login 组件
     private const val LOGIN_MODULE = "com.crimson.module.login.LoginModule"
 
-    //article
+    //Article 租价
     private const val ARTICLE_MODULE = "com.crimson.module.article.ArticleModule"
 
 
@@ -33,6 +33,7 @@ object ModuleConfig {
             ROUTER_MODULE,
             LOGIN_MODULE,
             ARTICLE_MODULE
+
         )
 
     /**

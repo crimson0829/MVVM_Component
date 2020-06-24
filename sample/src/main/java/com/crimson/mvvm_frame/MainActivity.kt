@@ -2,6 +2,8 @@ package com.crimson.mvvm_frame
 
 import android.os.Bundle
 import com.crimson.library.router.api.RouterActivityPath
+import com.crimson.library.router.api.put
+import com.crimson.library.router.api.putParams
 import com.crimson.library.router.api.routerPath
 import com.crimson.mvvm.base.BaseActivity
 import com.crimson.mvvm.base.BaseViewModel
@@ -35,7 +37,7 @@ class MainViewModel : BaseViewModel() {
     val loginClick = bindConsumer<Unit> {
         routerPath(RouterActivityPath.Login.PAGER_LOGIN)
             //传递参数
-            .withString("login", "login")
+            .put("login", "login")
             .navigation()
     }
 
@@ -49,7 +51,9 @@ class MainViewModel : BaseViewModel() {
 
 
     val onClickListBtn = bindConsumer<Unit> {
-       routerPath(RouterActivityPath.Article.PAGER_TAB).navigation()
+       routerPath(RouterActivityPath.Article.PAGER_TAB)
+           .putParams("param" to "inject string param")
+           .navigation()
     }
 
 

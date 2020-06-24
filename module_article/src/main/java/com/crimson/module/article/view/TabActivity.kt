@@ -3,8 +3,11 @@ package com.crimson.module.article.view
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.RecyclerView
+import com.alibaba.android.arouter.facade.annotation.Autowired
 import com.alibaba.android.arouter.facade.annotation.Route
 import com.crimson.library.router.api.RouterActivityPath
+import com.crimson.library.router.api.routerInject
 import com.crimson.module.article.BR
 import com.crimson.module.article.R
 import com.crimson.module.article.databinding.ActivityTabBinding
@@ -12,8 +15,10 @@ import com.crimson.mvvm.base.BaseActivity
 import com.crimson.mvvm.binding.adapter.ViewPager2FragmentAdapter
 import com.crimson.mvvm.binding.bindAdapter
 import com.crimson.mvvm.binding.bindTabLayout
+import com.crimson.mvvm.binding.bindViewPager2
 import com.crimson.mvvm.ext.logw
 import com.crimson.mvvm.ext.view.toast
+import kotlinx.android.synthetic.main.activity_tab.*
 import org.koin.androidx.viewmodel.ext.android.getViewModel
 
 /**
@@ -25,8 +30,13 @@ import org.koin.androidx.viewmodel.ext.android.getViewModel
 @Route(path = RouterActivityPath.Article.PAGER_TAB)
 class TabActivity : BaseActivity<ActivityTabBinding, TabViewModel>() {
 
+    @Autowired(name = "param")
+    @JvmField
+    var params:String?=""
+
 
     override fun initContentView(savedInstanceState: Bundle?): Int {
+        routerInject(this)
         return R.layout.activity_tab
     }
 
@@ -66,6 +76,8 @@ class TabActivity : BaseActivity<ActivityTabBinding, TabViewModel>() {
 
     override fun initView() {
 
+        toast(params)
+
         vm?.getData()
 
 
@@ -74,20 +86,14 @@ class TabActivity : BaseActivity<ActivityTabBinding, TabViewModel>() {
 
     override fun initViewObservable() {
 
-        vm?.tabDataCompleteLD?.observe(this, Observer { it ->
 
-            vb?.viewPager?.apply {
+        vm?.tabDataCompleteLD?.observe(this, Observer {
 
-                vm?.fragments?.let {
-                    //设置viewpager2 adapter
-                    bindAdapter(null, ViewPager2FragmentAdapter(this@TabActivity, it))
-                }
+            tab_layout.bindViewPager2(view_pager, this, vm?.fragments, it)
 
-                bindTabLayout(vb?.tabLayout, it)
-
-
-            }
-
+            (view_pager.getChildAt(0) as? RecyclerView)?.setItemViewCacheSize(
+                vm?.fragments?.size ?: 4
+            )
 
         })
 

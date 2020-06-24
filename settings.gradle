@@ -1,2 +1,5 @@
-include ':sample', ':library_mvvm', ':library_widget', ':library_router', ':module_login', ':module_article', ':library_tab'
+include ':library_tab'
+include ':library_mvvm'
+include ':library_widget'
+include ':sample', ':library_router', ':module_login', ':module_article'
 rootProject.name='mvvm_component'

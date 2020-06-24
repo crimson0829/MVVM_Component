@@ -3,6 +3,7 @@ package com.crimson.library.router.module
 import android.app.Application
 import com.alibaba.android.arouter.launcher.ARouter
 import com.crimson.library.BuildConfig
+import com.crimson.mvvm.ext.debugMode
 import com.crimson.mvvm.ext.logw
 import com.crimson.mvvm.module.base.IModule
 
@@ -15,10 +16,12 @@ class RouterModule : IModule {
     override fun initKoinModule() {}
 
     override fun initModule(app: Application) {
-        if (BuildConfig.DEBUG) {
+
+        debugMode {
             ARouter.openLog()
             ARouter.openDebug()
         }
+
         ARouter.init(app)
         logw("ARouter init")
     }

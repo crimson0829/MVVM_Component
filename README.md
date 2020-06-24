@@ -8,7 +8,6 @@
 
 module可作为功能独立组件，也可作为独立App运行，高内聚，低耦合。
 
-
 ## 使用
 
 1.1 组件的初始化:如果组件需初始化，可实现IModule接口并将完整路径添加到ModuleConfig下引用
@@ -91,8 +90,12 @@ class LoginInterceptor : IInterceptor {
     //跳转
     routerPath(RouterActivityPath.Login.PAGER_LOGIN)
              //传递参数
-             .withString("login", "login")
+             .put("login", "login")
+             //or 可传入多个参数
+             .putParams("login" to "login")
              .navigation()
+
+
 
 ```
 

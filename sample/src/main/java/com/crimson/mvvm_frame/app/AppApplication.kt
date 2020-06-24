@@ -5,7 +5,8 @@ import android.view.Gravity
 import com.crimson.mvvm.base.BaseApplication
 import com.crimson.mvvm.base.CommonViewLoading
 import com.crimson.mvvm.config.*
-import com.crimson.mvvm.net.NetworkClient.Companion.BASE_URL
+import com.crimson.mvvm.net.RemoteService
+
 import com.crimson.mvvm_frame.R
 import com.crimson.widget.loading.LoadingLayoutProgressViewAttrs
 import com.crimson.widget.loading.LoadingLayoutTextViewAttrs
@@ -33,12 +34,18 @@ class AppApplication : BaseApplication() {
     private fun appConfig() {
 
         AppConfigOptions(this)
-//            .buildStatusBar(StatusBarConfig(R.color.colorPrimary,false,100))
+//            .buildStatusBar(StatusBarConfig(R.color.colorWhite,true,100))
 //            .buildTitleBar(TitleBarConfig(R.color.colorPrimary,R.drawable.app_back_icon,
 //                Color.parseColor("#ffffff"),16f,true))
             .buildLoadingViewImplClass(CommonViewLoading::class.java)
-            .buildRetrofit(RetrofitConfig("https://www.wanandroid.com/", 20))
-            .buildToast(ToastConfig(Color.WHITE, 18f, Color.BLACK))
+            .buildRetrofit(RetrofitConfig("https://www.wanandroid.com/", 120))
+            .buildGlide(GlideConfig(
+                needUseNetworkClientOkHttp = true,
+                memoryCacheSizeFactor = 1.5f,
+                bitmapPoolSizeFactor = 1.5f,
+                sourceExecutorThreadCount = 20,
+                diskExecutorThreadCount = 20
+            ))
             .buildLoadingLayout(
                 LoadingLayoutConfig(
                     LoadingLayoutProgressViewAttrs(
@@ -58,6 +65,7 @@ class AppApplication : BaseApplication() {
             )
             .initDefaultSmartRefresh(SmartRefreshHeaderConfig(R.drawable.refresh_head_arrow))
             .initScreenAutoSize()
+
 
 
     }
